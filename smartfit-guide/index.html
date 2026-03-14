@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFit Guide - Personalized Fitness Plan</title>
+    <meta name="description" content="Get personalized exercise and nutrition recommendations based on your body details and fitness goals.">
+    
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for standard UI icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 1. Onboarding Form View -->
+        <main id="view-form" class="view active">
+            <div class="header-banner">
+                <i class="fa-solid fa-ranking-star logo-icon"></i>
+                <h1>SmartFit Guide</h1>
+                <p>Let's build your personalized plan.</p>
+            </div>
+            
+            <form id="onboarding-form" class="card form-card" onsubmit="app.processForm(event)">
+                
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="user-name">First Name</label>
+                        <input type="text" id="user-name" placeholder="e.g. Alex" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="user-age">Age</label>
+                        <input type="number" id="user-age" placeholder="25" min="10" max="100" required>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>Biological Gender</label>
+                    <div class="radio-group">
+                        <label class="radio-btn">
+                            <input type="radio" name="user-gender" value="male" checked>
+                            <span class="radio-box">Male</span>
+                        </label>
+                        <label class="radio-btn">
+                            <input type="radio" name="user-gender" value="female">
+                            <span class="radio-box">Female</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="user-height">Height (cm)</label>
+                        <input type="number" id="user-height" placeholder="175" min="100" max="250" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="user-weight">Weight (kg)</label>
+                        <input type="number" id="user-weight" placeholder="70" min="30" max="200" required>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="user-goal">Primary Fitness Goal</label>
+                        <select id="user-goal" required>
+                            <option value="lose">Weight Loss</option>
+                            <option value="maintain" selected>Maintain Fitness</option>
+                            <option value="gain">Muscle Gain</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="user-activity">Daily Activity</label>
+                        <select id="user-activity" required>
+                            <option value="1.2">Sedentary</option>
+                            <option value="1.375">Lightly Active</option>
+                            <option value="1.55" selected>Moderately Active</option>
+                            <option value="1.725">Very Active</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full" style="margin-top: 1rem;">
+                    Generate My Plan <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </main>
+
+        <!-- 2. Smart Dashboard View -->
+        <main id="view-dashboard" class="view">
+            <header class="dash-header">
+                <div>
+                    <h1 id="dash-greeting">Hi Alex,</h1>
+                    <p>Here is your smart guide for today.</p>
+                </div>
+                <div>
+                    <button class="btn-icon" onclick="window.print()" aria-label="Print Plan" title="Print Plan" style="margin-right: 0.5rem; display: inline-flex;">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
+                    <button class="btn-icon" onclick="app.resetForm()" aria-label="Edit Profile" title="Edit Profile" style="display: inline-flex;">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                
+                <!-- BMI Card -->
+                <section class="card bmi-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-weight-scale icon-accent"></i>
+                        <h2>Body Mass Index</h2>
+                    </div>
+                    <div class="bmi-content">
+                        <div class="bmi-value-wrap">
+                            <span id="ui-bmi-value" class="big-value">22.9</span>
+                        </div>
+                        <div class="bmi-details">
+                            <span id="ui-bmi-status" class="status-badge normal">Normal Weight</span>
+                            <p id="ui-bmi-desc">You are in a healthy weight range.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Water Reminder Card -->
+                <section class="card water-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-glass-water icon-blue"></i>
+                        <h2>Daily Water Goal</h2>
+                    </div>
+                    <div class="water-content">
+                        <span id="ui-water-goal" class="big-value">2500<small>ml</small></span>
+                        <p>Stay hydrated to support your <span id="ui-goal-text">fitness</span> goals!</p>
+                    </div>
+                </section>
+
+                <!-- Nutrition Targets Card -->
+                <section class="card macro-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-chart-pie icon-primary"></i>
+                        <h2>Nutrition Targets</h2>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <span id="ui-tdee-value" class="big-value">2000<small>kcal</small></span>
+                        <p class="subtitle" style="margin-bottom: 0;">Daily Calorie Goal</p>
+                    </div>
+                    <div class="macro-grid">
+                        <div class="macro-box">
+                            <span class="macro-label">Protein</span>
+                            <span id="ui-macro-pro" class="macro-value">150g</span>
+                        </div>
+                        <div class="macro-box">
+                            <span class="macro-label">Carbs</span>
+                            <span id="ui-macro-carbs" class="macro-value">200g</span>
+                        </div>
+                        <div class="macro-box">
+                            <span class="macro-label">Fats</span>
+                            <span id="ui-macro-fats" class="macro-value">60g</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4-Week Projection Card -->
+                <section class="card projection-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-arrow-trend-up icon-green"></i>
+                        <h2>4-Week Projection</h2>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <span id="ui-proj-weight" class="big-value" style="color: var(--primary);">68.2<small>kg</small></span>
+                        <p class="subtitle" id="ui-proj-desc" style="margin-top: 0.5rem; margin-bottom: 0;">Estimated weight if you follow this plan perfectly.</p>
+                    </div>
+                </section>
+
+                <!-- Exercise Plan Card -->
+                <section class="card exercise-card full-width">
+                    <div class="card-header">
+                        <i class="fa-solid fa-calendar-days icon-accent"></i>
+                        <h2>7-Day Workout Split</h2>
+                    </div>
+                    <p class="subtitle" id="ui-workout-desc">Your personalized weekly routine.</p>
+                    
+                    <div class="day-tabs" id="ui-day-tabs">
+                        <button class="day-tab active" data-day="0" onclick="app.showWorkoutDay(0)">Day 1</button>
+                        <button class="day-tab" data-day="1" onclick="app.showWorkoutDay(1)">Day 2</button>
+                        <button class="day-tab" data-day="2" onclick="app.showWorkoutDay(2)">Day 3</button>
+                        <button class="day-tab" data-day="3" onclick="app.showWorkoutDay(3)">Day 4</button>
+                        <button class="day-tab" data-day="4" onclick="app.showWorkoutDay(4)">Day 5</button>
+                        <button class="day-tab" data-day="5" onclick="app.showWorkoutDay(5)">Day 6</button>
+                        <button class="day-tab" data-day="6" onclick="app.showWorkoutDay(6)">Day 7</button>
+                    </div>
+                    
+                    <div class="workout-day-content">
+                        <h3 id="ui-day-title" style="margin-bottom: 1rem; color: var(--primary);">Loading...</h3>
+                        <ul id="ui-exercise-list" class="suggestion-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Food Plan Card -->
+                <section class="card food-card full-width">
+                    <div class="card-header">
+                        <i class="fa-solid fa-utensils icon-green"></i>
+                        <h2>Nutrition Plan</h2>
+                    </div>
+                    <p class="subtitle" id="ui-food-desc">A sample daily menu tailored for weight loss.</p>
+                    
+                    <div class="meal-grid">
+                        <div class="meal-box">
+                            <h3><i class="fa-regular fa-sun"></i> Breakfast</h3>
+                            <ul id="ui-breakfast-list"></ul>
+                        </div>
+                        <div class="meal-box">
+                            <h3><i class="fa-solid fa-cloud-sun"></i> Lunch</h3>
+                            <ul id="ui-lunch-list"></ul>
+                        </div>
+                        <div class="meal-box">
+                            <h3><i class="fa-solid fa-moon"></i> Dinner</h3>
+                            <ul id="ui-dinner-list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Grocery List Card -->
+                <section class="card grocery-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-basket-shopping icon-blue"></i>
+                        <h2>Smart Grocery List</h2>
+                    </div>
+                    <p class="subtitle">Ingredients for your meal plan.</p>
+                    <ul id="ui-grocery-list" class="checklist">
+                        <!-- Populated by JS -->
+                    </ul>
+                </section>
+
+            </div>
+            
+            <footer style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.85rem;">
+                SmartFit Guide &copy; 2026. Consult a doctor before starting any new fitness routine.
+            </footer>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
