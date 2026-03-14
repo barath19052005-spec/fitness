@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Hub - Unified Suite</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="portal-container">
+        <header class="portal-header">
+            <div class="header-top">
+                <div class="logo-wrapper">
+                    <i class="fa-solid fa-bolt logo-icon gradient-text"></i>
+                    <h1 class="gradient-text">Fitness Hub</h1>
+                </div>
+                <button id="theme-toggle" class="btn-theme" title="Toggle Ecosystem Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+            <p class="subtitle">Your complete, mobile-responsive fitness suite.</p>
+        </header>
+
+        <!-- Global Daily Challenge -->
+        <section class="challenge-hero card" id="challenge-card">
+            <div class="challenge-badge">Daily Challenge</div>
+            <div class="challenge-content">
+                <h2 id="challenge-title">Loading Challenge...</h2>
+                <p id="challenge-desc">Your daily motivator is being prepared.</p>
+                <button class="btn btn-challenge" id="btn-complete-challenge">
+                    <i class="fa-solid fa-check-circle"></i> Complete Task
+                </button>
+            </div>
+        </section>
+
+        <div class="app-grid">
+            <!-- App 1: FitTrack -->
+            <a href="fit-track/index.html" class="app-card" style="--accent: #0ea5e9;">
+                <div class="app-icon" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">
+                    <i class="fa-solid fa-dumbbell"></i>
+                </div>
+                <div class="app-content">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <h2>FitTrack System</h2>
+                        <div id="pip-fittrack" class="stat-pip hidden">0</div>
+                    </div>
+                    <p>Advanced tracking for workouts, sleep, weight progress, and daily macros.</p>
+                    <ul class="feature-list">
+                        <li><i class="fa-solid fa-check"></i> Interactive Charts</li>
+                        <li><i class="fa-solid fa-check"></i> Custom Workouts</li>
+                        <li><i class="fa-solid fa-check"></i> Streak Gamification</li>
+                    </ul>
+                    <span class="btn launch-btn">Launch App <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+
+            <!-- App 2: SmartFit Guide -->
+            <a href="smartfit-guide/index.html" class="app-card" style="--accent: #4f46e5;">
+                <div class="app-icon" style="background: rgba(79, 70, 229, 0.15); color: #4f46e5;">
+                    <i class="fa-solid fa-ranking-star"></i>
+                </div>
+                <div class="app-content">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <h2>SmartFit Guide</h2>
+                        <div id="pip-smartfit" class="stat-pip hidden">!</div>
+                    </div>
+                    <p>Input your body details and let the algorithm generate a personalized plan.</p>
+                    <ul class="feature-list">
+                        <li><i class="fa-solid fa-check"></i> Calorie/TDEE Engine</li>
+                        <li><i class="fa-solid fa-check"></i> 7-Day Workout Split</li>
+                        <li><i class="fa-solid fa-check"></i> Auto Grocery List</li>
+                    </ul>
+                    <span class="btn launch-btn">Launch App <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+            
+            <!-- App 3: ZenBreath -->
+            <a href="zen-breath/index.html" class="app-card" style="--accent: #0d9488;">
+                <div class="app-icon" style="background: rgba(13, 148, 136, 0.15); color: #0d9488;">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+                <div class="app-content">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <h2>ZenBreath</h2>
+                        <div id="pip-zenbreath" class="stat-pip hidden">0</div>
+                    </div>
+                    <p>Mindfulness, guided breathing exercises, and meditation timers for post-workout recovery.</p>
+                    <ul class="feature-list">
+                        <li><i class="fa-solid fa-check"></i> 4-7-8 Relaxation</li>
+                        <li><i class="fa-solid fa-check"></i> Box Breathing Focus</li>
+                        <li><i class="fa-solid fa-check"></i> Dynamic Visualizations</li>
+                    </ul>
+                    <span class="btn launch-btn">Launch App <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+            </a>
+        </div>
+        
+        <footer>
+            Fully mobile-responsive web applications powered by HTML, CSS, & JS.
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
