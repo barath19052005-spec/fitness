@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack - Modern Fitness & Health Tracker</title>
+    <meta name="description" content="FitTrack is a premium web application for tracking daily workouts, calculating BMI, logging water intake, and monitoring your weight progress.">
+    
+    <!-- Emoji Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- FontAwesome Icons for UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Main Application Area -->
+        <main>
+            <header>
+                <div class="logo">
+                    <i class="fa-solid fa-bolt"></i> FitTrack
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="streak-badge" title="Daily Streak">
+                        <i class="fa-solid fa-fire"></i> <span id="streak-count" style="margin-left: 2px;">0</span>
+                    </div>
+                    <button class="btn-icon" onclick="app.toggleTheme()" aria-label="Toggle Theme" style="background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 40px; height: 40px; color: var(--text-main); cursor: pointer; transition: 0.3s ease;">
+                        <i class="fa-solid fa-moon" id="theme-icon"></i>
+                    </button>
+                    <div class="user-profile"></div>
+                </div>
+            </header>
+
+            <!-- 1. Home Dashboard Section -->
+            <section id="home" class="page active">
+                <h1 class="page-title">Dashboard</h1>
+                
+                <div class="dash-grid">
+                    <div class="card dash-card">
+                        <i class="fa-solid fa-fire"></i>
+                        <h2>Calories Burned</h2>
+                        <div class="value">1,240</div>
+                    </div>
+                    <div class="card dash-card">
+                        <i class="fa-solid fa-bed"></i>
+                        <h2>Sleep</h2>
+                        <div id="dash-sleep-value" class="value">-- hrs</div>
+                    </div>
+                    <div class="card dash-card">
+                        <i class="fa-solid fa-droplet"></i>
+                        <h2>Water Intake</h2>
+                        <div id="dash-water-value" class="value">0 ml</div>
+                    </div>
+                    <div class="card dash-card">
+                        <i class="fa-solid fa-weight-scale"></i>
+                        <h2>Current BMI</h2>
+                        <div id="dash-bmi-value" class="value">--</div>
+                    </div>
+                </div>
+                
+                <h2 style="margin: 1.5rem 0 1rem; font-weight: 500; font-size: 1.2rem;">Today's Focus</h2>
+                <div class="card highlight-card">
+                    <div>
+                        <h3>Full Body Workout</h3>
+                        <p>4 Exercises • 8 mins</p>
+                    </div>
+                    <button class="btn play-btn" onclick="app.navigate('workout')" aria-label="Go to workout plan">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                
+                <!-- Achievements / Badges Section -->
+                <h2 style="margin: 1.5rem 0 1rem; font-weight: 500; font-size: 1.2rem;">Achievements <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: normal; float: right; margin-top: 5px;" id="badge-count-disp">0/3</span></h2>
+                <div class="card">
+                    <div class="badges-grid" id="badges-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                        <!-- Badges populated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Workout Plan Section -->
+            <section id="workout" class="page">
+                <h1 class="page-title">Workout Plan</h1>
+                <div class="card">
+                    <div class="progress-input-row custom-workout-inputs" style="margin-bottom: 1.5rem">
+                        <input type="text" id="custom-workout-name" placeholder="Exercise Name" class="input-text flex-1">
+                        <input type="number" id="custom-workout-time" placeholder="Secs" class="input-number" min="10">
+                        <button class="btn" onclick="app.addCustomWorkout()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    
+                    <h2 style="margin-bottom: 1rem; font-weight: 500; font-size: 1.1rem;">Daily Routine</h2>
+                    <div id="workout-list">
+                        <!-- Workouts dynamically populated via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Water Tracker Section -->
+            <section id="water" class="page">
+                <h1 class="page-title">Water Tracker</h1>
+                <div class="card water-container">
+                    <div style="text-align: center;">
+                        <h2 id="water-text">0 / 2000 ml</h2>
+                        <p class="subtitle-text">Daily Goal</p>
+                    </div>
+                    
+                    <div class="bottle-wrap">
+                        <div class="water-level" id="water-level"></div>
+                    </div>
+                    
+                    <div class="water-controls">
+                        <button onclick="app.addWater(-250)" aria-label="Remove Water"><i class="fa-solid fa-minus"></i></button>
+                        <button class="add-btn" onclick="app.addWater(250)" aria-label="Add Water"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <p class="subtitle-text" style="font-size: 0.9rem;">250ml per glass</p>
+                </div>
+            </section>
+
+            <!-- 4. BMI Calculator Section -->
+            <section id="bmi" class="page">
+                <h1 class="page-title">BMI Calculator</h1>
+                <div class="card">
+                    <div class="input-group">
+                        <label for="bmi-weight">Weight (kg)</label>
+                        <input type="number" id="bmi-weight" placeholder="e.g. 70" min="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="bmi-height">Height (cm)</label>
+                        <input type="number" id="bmi-height" placeholder="e.g. 175" min="1">
+                    </div>
+                    <button class="btn w-full" onclick="app.calculateBMI()">Calculate BMI</button>
+                    
+                    <div id="bmi-result" class="bmi-result">
+                        <div id="bmi-value-display">22.9</div>
+                        <div id="bmi-category-display">Normal</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Weight Progress Section -->
+            <section id="progress" class="page">
+                <h1 class="page-title">Analytics & Progress</h1>
+                
+                <!-- Weight Chart -->
+                <div class="card">
+                    <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Weight Trend</h2>
+                    <div style="position: relative; height:200px; width:100%; margin-bottom: 1.5rem;">
+                        <canvas id="weightChart"></canvas>
+                    </div>
+                    
+                    <div class="progress-input-row">
+                        <div class="input-group flex-1">
+                            <label for="progress-weight" class="sr-only">Weight in kg</label>
+                            <input type="number" id="progress-weight" placeholder="Weight (kg)" min="1" step="0.1">
+                        </div>
+                        <button class="btn" onclick="app.addWeightRecord()">Log</button>
+                    </div>
+                    
+                    <div class="progress-list" id="progress-list">
+                        <!-- Weight log dynamically populated via JS -->
+                    </div>
+                </div>
+                
+                <!-- Sleep Chart -->
+                <div class="card">
+                    <h2 style="font-size: 1.1rem; margin-bottom: 1rem;">Sleep History</h2>
+                    <div style="position: relative; height:200px; width:100%; margin-bottom: 0.5rem;">
+                        <canvas id="sleepChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            <!-- 6. Sleep Section -->
+            <section id="sleep" class="page">
+                <h1 class="page-title">Sleep Tracker</h1>
+                <div class="card sleep-card highlight-card">
+                    <div>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem">Log Sleep</h2>
+                        <p>Track your rest for better recovery.</p>
+                    </div>
+                    <i class="fa-solid fa-moon" style="font-size: 3rem; color: var(--secondary)"></i>
+                </div>
+                
+                <div class="card">
+                    <div class="progress-input-row" style="flex-wrap: wrap;">
+                        <div class="input-group flex-1" style="min-width: 140px;">
+                            <label for="sleep-bedtime" style="font-size: 0.8rem;">Bedtime</label>
+                            <input type="time" id="sleep-bedtime" value="22:00">
+                        </div>
+                        <div class="input-group flex-1" style="min-width: 140px;">
+                            <label for="sleep-waketime" style="font-size: 0.8rem;">Wake Time</label>
+                            <input type="time" id="sleep-waketime" value="06:00">
+                        </div>
+                        <button class="btn" style="height: fit-content; align-self: center; margin-top: 0.8rem;" onclick="app.addSleepRecord()">Save</button>
+                    </div>
+                    
+                    <h3 style="margin-top: 1rem; margin-bottom: 1rem;">Recent Logs</h3>
+                    <div class="progress-list" id="sleep-list">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. Activity Section -->
+            <section id="activity" class="page">
+                <h1 class="page-title">Daily Activity</h1>
+                <div class="card">
+                    <div class="activity-metric">
+                        <i class="fa-solid fa-shoe-prints" style="color: var(--accent)"></i>
+                        <div class="flex-1">
+                            <h3>Steps Today</h3>
+                            <p class="subtitle-text">Goal: <span id="settings-step-goal-display">10000</span></p>
+                        </div>
+                        <div class="value" id="activity-steps" style="font-size: 1.5rem; font-weight: bold">0</div>
+                    </div>
+                    
+                    <div class="progress-input-row" style="margin-top: 1.5rem; margin-bottom: 0">
+                        <div class="input-group flex-1">
+                            <input type="number" id="activity-add-steps" placeholder="Add Steps" min="1">
+                        </div>
+                        <button class="btn" onclick="app.addSteps()">Add</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. Settings Section -->
+            <section id="settings" class="page">
+                <h1 class="page-title">Settings</h1>
+                <div class="card">
+                    <div class="input-group">
+                        <label for="settings-name">Display Name</label>
+                        <input type="text" id="settings-name" placeholder="E.g. Alex">
+                    </div>
+                    <div class="input-group">
+                        <label for="settings-water">Water Goal (ml)</label>
+                        <input type="number" id="settings-water" placeholder="2000" step="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="settings-step">Daily Step Goal</label>
+                        <input type="number" id="settings-step" placeholder="10000" step="500">
+                    </div>
+                    <div class="input-group">
+                        <label for="settings-cals">Daily Calories Goal</label>
+                        <input type="number" id="settings-cals" placeholder="2000" step="100">
+                    </div>
+                    <button class="btn w-full" style="margin-bottom: 1rem;" onclick="app.saveSettings()">Save Preferences</button>
+                    
+                    <hr style="border-color: var(--card-border); margin: 1.5rem 0; opacity: 0.5;">
+                    
+                    <h3 style="margin-bottom: 1rem; font-size: 1rem">Data Management</h3>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn btn-secondary flex-1" onclick="app.exportData()"><i class="fa-solid fa-download"></i> Export</button>
+                        <button class="btn btn-secondary flex-1" onclick="document.getElementById('import-file').click()"><i class="fa-solid fa-upload"></i> Import</button>
+                        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="app.importData(event)">
+                    </div>
+                    <p class="subtitle-text" style="font-size: 0.8rem; margin-top: 0.8rem; text-align: center;">Export your data to backup or migrate devices.</p>
+                </div>
+            </section>
+
+            <!-- 9. Diet & Macros Section -->
+            <section id="diet" class="page">
+                <h1 class="page-title">Nutrition Tracking</h1>
+                
+                <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem">
+                    <div class="macro-charts-container">
+                        <!-- Calorie Main Ring -->
+                        <div class="macro-ring-wrap">
+                            <svg viewBox="0 0 100 100" style="width: 150px; height: 150px; transform: rotate(-90deg);">
+                                <circle cx="50" cy="50" r="45" class="bg" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8" stroke-linecap="round"></circle>
+                                <circle cx="50" cy="50" r="45" class="fg cals-ring" id="cals-ring" fill="none" stroke="var(--primary)" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="283" stroke-linecap="round" style="transition: stroke-dashoffset 1s ease-in-out;"></circle>
+                            </svg>
+                            <div class="ring-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                <div id="ui-cals" style="font-size: 1.6rem; font-weight: bold; color: var(--primary)">0</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted)">/ <span id="ui-cals-goal">2000</span> kcal</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="macro-stats-grid">
+                        <div>
+                            <h4 style="color: #ef4444; font-size: 0.95rem; margin-bottom: 0.3rem">Protein</h4>
+                            <div style="font-weight: bold; font-size: 1.2rem" id="ui-protein">0g</div>
+                        </div>
+                        <div>
+                            <h4 style="color: #f59e0b; font-size: 0.95rem; margin-bottom: 0.3rem">Carbs</h4>
+                            <div style="font-weight: bold; font-size: 1.2rem" id="ui-carbs">0g</div>
+                        </div>
+                        <div>
+                            <h4 style="color: #10b981; font-size: 0.95rem; margin-bottom: 0.3rem">Fats</h4>
+                            <div style="font-weight: bold; font-size: 1.2rem" id="ui-fats">0g</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">Log Meal</h3>
+                    <div class="progress-input-row meal-log-row" style="margin-top: 1rem; flex-wrap: wrap; gap: 0.8rem">
+                        <input type="text" id="meal-name" placeholder="Meal Name" class="input-text w-full">
+                        
+                        <div class="meal-macros-row">
+                            <input type="number" id="meal-cals" placeholder="Kcal" class="input-number">
+                            <input type="number" id="meal-pro" placeholder="Pro (g)" class="input-number">
+                        </div>
+                        <div class="meal-macros-row">
+                            <input type="number" id="meal-carbs" placeholder="Carbs (g)" class="input-number">
+                            <input type="number" id="meal-fats" placeholder="Fat (g)" class="input-number">
+                        </div>
+                        <button class="btn w-full" onclick="app.addMeal()">Add Meal</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Dynamic Bottom Navigation -->
+        <nav>
+            <ul class="nav-list">
+                <li class="nav-item active" data-target="home" aria-label="Home">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </li>
+                <li class="nav-item" data-target="workout" aria-label="Workout">
+                    <i class="fa-solid fa-dumbbell"></i>
+                    <span>Workout</span>
+                </li>
+                <li class="nav-item" data-target="water" aria-label="Water">
+                    <i class="fa-solid fa-glass-water"></i>
+                    <span>Water</span>
+                </li>
+                <li class="nav-item" data-target="sleep" aria-label="Sleep">
+                    <i class="fa-solid fa-bed"></i>
+                    <span>Sleep</span>
+                </li>
+                <li class="nav-item" data-target="activity" aria-label="Activity">
+                    <i class="fa-solid fa-shoe-prints"></i>
+                    <span>Activity</span>
+                </li>
+                <li class="nav-item" data-target="diet" aria-label="Diet">
+                    <i class="fa-solid fa-utensils"></i>
+                    <span>Diet</span>
+                </li>
+                <li class="nav-item" data-target="settings" aria-label="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Workout Timer Modal -->
+    <div class="timer-modal" id="timer-modal">
+        <div class="card timer-card">
+            <h2 id="timer-title">Exercise</h2>
+            <p class="subtitle-text">Get Ready!</p>
+            
+            <div class="circle-timer" id="timer-display">
+                00:00
+            </div>
+            
+            <div class="timer-actions">
+                <button class="btn btn-secondary" onclick="app.closeTimer()">Cancel</button>
+                <button class="btn" id="timer-start-btn" onclick="app.toggleTimer()">Start</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script src="script.js"></script>
+</body>
+</html>
